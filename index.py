@@ -1,6 +1,47 @@
 import sqlite3
 
 
+class db:
+    # con = sqlite3.connect("data.db")
+    con = sqlite3.connect(":memory:")
+    c = con.cursor()
+
+    def createConnection(self):
+        self.c.execute(
+            """
+        CREATE TABLE IF NOT EXISTS USER
+        (   USER_ID int NOT NULL PRIMARY KEY AUTOINCREMENT,
+            FIRST_NAME text NOT NULL,
+            LAST_NAME text NOT NULL,
+            DOB text NOT NULL,
+            ADDRESS text NOT NULL,
+            EMAIL_ID text NOT NULL,
+            PASSWORD text NOT NULL,
+            GENDER text,
+            AGE int,
+            PHONE_NUMBER int NOT NULL
+        );
+        """
+        )
+        self.c.execute(
+            """
+        CREATE TABLE IF NOT EXISTS DOCTOR
+        (   USER_ID int NOT NULL PRIMARY KEY AUTOINCREMENT,
+            FIRST_NAME text NOT NULL,
+            LAST_NAME text NOT NULL,
+            DOB text NOT NULL,
+            ADDRESS text NOT NULL,
+            EMAIL_ID text NOT NULL,
+            PASSWORD text NOT NULL,
+            GENDER text,
+            AGE int,
+            PHONE_NUMBER int NOT NULL
+        );
+        """
+        )
+        self.con.commit()
+
+
 class Patient:
     def __init__(self):
         ...
