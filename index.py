@@ -6,6 +6,7 @@ class db:
         ...
 
     def create_db(self):
+        pandas = D
         ...
 
 
