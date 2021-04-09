@@ -1,13 +1,17 @@
 import pandas as pd
 import os
+from termcolor import cprint
+
 
 class utils:
     @staticmethod
-    def checkIf(arr:list, text:str):
+    def checkIf(arr: list, text: str):
         for pattern in arr:
-            if pattern == text.strip():
+            if pattern.to_lower() == text.strip().to_lower():
                 return True
         return False
+
+
 class Database:
     database = {}
 
@@ -19,9 +23,7 @@ class Database:
         tables_xlsx = os.listdir("./db")
         for table_xlsx in tables_xlsx:
             table_name = table_xlsx.split(".")[0]
-            print(table_xlsx)
             self.database[table_name] = pd.read_excel(f"./db/{table_xlsx}")
-            print(self.database[table_name])
 
     def create_table(self):
         DBT_PATIENT = pd.DataFrame(
@@ -78,38 +80,45 @@ class Database:
 
         db_tables = [i for i in locals() if i.startswith("DBT_")]
         for table_name in db_tables:
-            if not os.path.exists(f"./db/{table_name}.xlsx"):
-                temp_name = table_name.split("_")[1]
+            temp_name = table_name.split("_")[1]
+            if not os.path.exists(f"./db/{temp_name}.xlsx"):
                 print(f"CREATE TABLE {temp_name}")
-                locals()[table_name].to_excel(f"./db/{table_name}.xlsx")
+                locals()[table_name].to_excel(f"./db/{temp_name}.xlsx")
+
 
 db = Database()
 
+
 class Patient:
     __login_status = False
-    
+
     def __init__(self):
         ...
 
     def register(self):
         ENTRY_EMAIL_ID = input("Enter Your Email ID: ")
-        if ENTRY_EMAIL_ID is in db.database['PATIENT']['EMAIL_ID']:
-            temp_inp = input("[!] You already have an account. Do you want to login? ")
-            if utils.checkIn(['yes',''])
-            
-            
-            
-        
-        ENTRY_PATIENT_ID = 
-        ENTRY_FIRST_NAME = input("Enter Your : ")
-        ENTRY_LAST_NAME = input("Enter Your : ")
-        ENTRY_DOB = input("Enter Your : ")
-        ENTRY_ADDRESS = input("Enter Your : ")
-        ENTRY_EMAIL_ID = input("Enter Your : ")
-        ENTRY_PASSWORD = input("Enter Your : ")
-        ENTRY_GENDER = input("Enter Your : ")
-        ENTRY_AGE = input("Enter Your : ")
-        ENTRY_PHONE_NUMBER = input("Enter Your : ")
+        # check id email id is empty or not
+        while ENTRY_EMAIL_ID == "":
+            cprint("[!] Email ID cannot be empty", "red")
+            ENTRY_EMAIL_ID = input("Enter Your Email ID: ")
+        if ENTRY_EMAIL_ID in db.database["PATIENT"]["EMAIL_ID"]:
+            cprint("[!] You already have an account. ", "red")
+            temp_inp = input("Do you want to login? ")
+            if utils.checkIn(["yes", "y", "1"], temp_inp):
+                self.login()
+            print("Bye")
+            return 0
+
+        # ENTRY_PATIENT_ID =
+        # ENTRY_FIRST_NAME = input("Enter Your : ")
+        # ENTRY_LAST_NAME = input("Enter Your : ")
+        # ENTRY_DOB = input("Enter Your : ")
+        # ENTRY_ADDRESS = input("Enter Your : ")
+        # ENTRY_EMAIL_ID = input("Enter Your : ")
+        # ENTRY_PASSWORD = input("Enter Your : ")
+        # ENTRY_GENDER = input("Enter Your : ")
+        # ENTRY_AGE = input("Enter Your : ")
+        # ENTRY_PHONE_NUMBER = input("Enter Your : ")
 
     def login(self):
         ...
@@ -184,4 +193,5 @@ class Hospital:
         ...
 
 
-d = Database()
+temp_user = Patient()
+temp_user.register()
