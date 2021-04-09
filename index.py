@@ -1,7 +1,13 @@
 import pandas as pd
 import os
 
-
+class utils:
+    @staticmethod
+    def checkIf(arr:list, text:str):
+        for pattern in arr:
+            if pattern == text.strip():
+                return True
+        return False
 class Database:
     database = {}
 
@@ -18,9 +24,9 @@ class Database:
             print(self.database[table_name])
 
     def create_table(self):
-        DBT_USER = pd.DataFrame(
+        DBT_PATIENT = pd.DataFrame(
             columns=[
-                "USER_ID",
+                "PATIENT_ID",
                 "FIRST_NAME",
                 "LAST_NAME",
                 "DOB",
@@ -50,7 +56,7 @@ class Database:
         DBT_ADMIN = pd.DataFrame(
             columns=[
                 "ADMIN_NAME",
-                "USER_ID",
+                "PATIENT_ID",
                 "DOCTOR_ID",
                 "PASSWORD",
                 "BOOKING_TIME",
@@ -77,13 +83,33 @@ class Database:
                 print(f"CREATE TABLE {temp_name}")
                 locals()[table_name].to_excel(f"./db/{table_name}.xlsx")
 
+db = Database()
 
 class Patient:
+    __login_status = False
+    
     def __init__(self):
         ...
 
     def register(self):
-        ...
+        ENTRY_EMAIL_ID = input("Enter Your Email ID: ")
+        if ENTRY_EMAIL_ID is in db.database['PATIENT']['EMAIL_ID']:
+            temp_inp = input("[!] You already have an account. Do you want to login? ")
+            if utils.checkIn(['yes',''])
+            
+            
+            
+        
+        ENTRY_PATIENT_ID = 
+        ENTRY_FIRST_NAME = input("Enter Your : ")
+        ENTRY_LAST_NAME = input("Enter Your : ")
+        ENTRY_DOB = input("Enter Your : ")
+        ENTRY_ADDRESS = input("Enter Your : ")
+        ENTRY_EMAIL_ID = input("Enter Your : ")
+        ENTRY_PASSWORD = input("Enter Your : ")
+        ENTRY_GENDER = input("Enter Your : ")
+        ENTRY_AGE = input("Enter Your : ")
+        ENTRY_PHONE_NUMBER = input("Enter Your : ")
 
     def login(self):
         ...
