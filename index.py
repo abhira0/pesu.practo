@@ -259,7 +259,7 @@ class Admin:
         print("-" * 19, "ADMIN", "-" * 20)
         try:
             tmp_inp = input(
-                """Please enter your choice:
+                """Please enter your choice: [Ctrl+C to Quit]
                 1. Add Doctor
                 2. Add Hospital
                 3. Print User DB
@@ -267,6 +267,7 @@ class Admin:
                 5. Print Doctor DB\n"""
             )
         except:
+            cprint("BYE BYE Admin avre", "magenta")
             exit(0)
         if tmp_inp == "1":
             self.add_doctor()
