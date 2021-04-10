@@ -1,6 +1,7 @@
 import pandas as pd
 import os
 from termcolor import cprint
+import re, datetime
 
 
 class utils:
@@ -10,6 +11,15 @@ class utils:
             if pattern.to_lower() == text.strip().to_lower():
                 return True
         return False
+
+    @staticmethod
+    def isValidDate(date: str):
+        d, m, y = map(int, date)
+        try:
+            datetime.datetime(d, m, y)
+        except:
+            return False
+        return True
 
 
 class Database:
@@ -27,28 +37,12 @@ class Database:
 
     def create_table(self):
         DBT_PATIENT = pd.DataFrame(
-            columns=[
-                "PATIENT_ID",
-                "FIRST_NAME",
-                "LAST_NAME",
-                "DOB",
-                "ADDRESS",
-                "EMAIL_ID",
-                "PASSWORD",
-                "GENDER",
-                "AGE",
-                "PHONE_NUMBER",
-            ]
+            columns=["EMAIL_ID", "PASSWORD", "GENDER", "AGE", "PHONE_NUMBER"]
         )
         DBT_DOCTOR = pd.DataFrame(
             columns=[
-                "DOCTOR_ID",
-                "FIRST_NAME",
-                "LAST_NAME",
-                "ADDRESS",
                 "SPECIALITY",
                 "YOE",
-                "WORKPLACE",
                 "RATING",
                 "EMAIL_ID",
                 "PHONE_NUMBER",
@@ -58,25 +52,15 @@ class Database:
         DBT_ADMIN = pd.DataFrame(
             columns=[
                 "ADMIN_NAME",
-                "PATIENT_ID",
-                "DOCTOR_ID",
+                "PID",
+                "DID",
                 "PASSWORD",
                 "BOOKING_TIME",
                 "TIMESTAMP",
                 "HOSPITAL_NAME",
             ]
         )
-        DBT_HOSPITAL = pd.DataFrame(
-            columns=[
-                "HOSPITAL_ID",
-                "NAME",
-                "ADDRESS",
-                "EMAIL",
-                "PHONE_NUMBER",
-                "ZIP_CODE",
-                "RATING",
-            ]
-        )
+        DBT_HOSPITAL = pd.DataFrame(columns=["HOSPITAL_ID", "EMAIL", "PHONE_NUMBER"])
 
         db_tables = [i for i in locals() if i.startswith("DBT_")]
         for table_name in db_tables:
@@ -96,26 +80,52 @@ class Patient:
         ...
 
     def register(self):
-        ENTRY_EMAIL_ID = input("Enter Your Email ID: ")
-        # check id email id is empty or not
-        while ENTRY_EMAIL_ID == "":
-            cprint("[!] Email ID cannot be empty", "red")
-            ENTRY_EMAIL_ID = input("Enter Your Email ID: ")
-        if ENTRY_EMAIL_ID in db.database["PATIENT"]["EMAIL_ID"]:
-            cprint("[!] You already have an account. ", "red")
-            temp_inp = input("Do you want to login? ")
-            if utils.checkIn(["yes", "y", "1"], temp_inp):
-                self.login()
-            print("Bye")
-            return 0
+        def get_ENTRY_EMAIL_ID():
+            tmp_inp = input("Enter Your Email ID: ")
+            while True:
+                if tmp_inp == "":  # id must not be empty
+                    cprint("[!] Email ID cannot be empty", "red")
+                # id must be valid
+                elif not re.match(r"[\w\d]+@[\d\w]+\.[\w]", tmp_inp):
+                    cprint("[!] Email ID should be valid", "red")
+                else:
+                    break
+                tmp_inp = input("Enter Your Email ID: ")
+            return tmp_inp
 
-        # ENTRY_PATIENT_ID =
-        # ENTRY_FIRST_NAME = input("Enter Your : ")
-        # ENTRY_LAST_NAME = input("Enter Your : ")
-        # ENTRY_DOB = input("Enter Your : ")
-        # ENTRY_ADDRESS = input("Enter Your : ")
-        # ENTRY_EMAIL_ID = input("Enter Your : ")
-        # ENTRY_PASSWORD = input("Enter Your : ")
+        ENTRY_EMAIL_ID = get_ENTRY_EMAIL_ID()
+        # check if the patient had already registered
+        if ENTRY_EMAIL_ID in db.database["PATIENT"]["EMAIL_ID"]:
+            cprint("[i] You already have an account. ", "cyan")
+            if utils.checkIn(["yes", "y", "1"], input("Do you want to login? ")):
+                self.login()
+                return "Redirected to Login Page"
+            print("Bye")
+            return "No Registration nor Login"
+        # ----------------------------------------
+        def get_ENTRY_PASSWORD():
+            tmp_inp = input("Enter the password: ")
+            while True:
+                if len(tmp_inp) < 6:
+                    cprint("Length of the password must be greater than 4", "red")
+                tmp_inp = input("Enter the password: ")
+            return tmp_inp
+
+        ENTRY_PASSWORD = get_ENTRY_PASSWORD()
+
+        # ----------------------------------------
+        def get_ENTRY_GENDER():
+            tmp_inp = input("Enter the gender (m/f): ")
+            while True:
+                if tmp_inp.to_lower() in ["m", "f", "male", "female"]:
+                    cprint(
+                        "Please enter in proper format ['m','f','male','female']", "red"
+                    )
+                tmp_inp = input("Enter the gender (m/f): ")
+            return tmp_inp
+
+        ENTRY_PASSWORD = get_ENTRY_PASSWORD()
+
         # ENTRY_GENDER = input("Enter Your : ")
         # ENTRY_AGE = input("Enter Your : ")
         # ENTRY_PHONE_NUMBER = input("Enter Your : ")
