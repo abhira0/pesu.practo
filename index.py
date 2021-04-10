@@ -234,29 +234,63 @@ class Doctor:
 
 
 class Admin:
-    __usrs = {"admin": "admin"}
+    __usrs = {"admin": "admin", "root": "toor"}
 
     def __init__(self):
         self.__login_status = False
         __usr = input("Enter Admin Name: ")
         __pass = input("Enter Admin Password: ")
         try:
-            if self.__usrs[__usr] == self.__usrs[__pass]:
+            if self.__usrs[__usr] == __pass:
                 self.__login_status = True
+                cprint("Login Successful", "green")
             else:
-                # self.__delete()
+                self.__loginFalse("PASSWD")
                 ...
         except:
-            # self.__delete()
+            self.__loginFalse("USRNM")
             ...
+        self.menu()
 
-    def __delete(self):
-        cprint("Login Unsuccessful", "red")
+    def menu(self):
+        if not self.__login_status:
+            return
+
+        print("-" * 19, "ADMIN", "-" * 20)
+        try:
+            tmp_inp = input(
+                """Please enter your choice:
+                1. Add Doctor
+                2. Add Hospital
+                3. Print User DB
+                4. Print Hospital DB
+                5. Print Doctor DB\n"""
+            )
+        except:
+            exit(0)
+        if tmp_inp == "1":
+            self.add_doctor()
+        elif tmp_inp == "2":
+            self.add_hospital()
+        elif tmp_inp == "3":
+            self.print_table("PATIENT")
+        elif tmp_inp == "4":
+            self.print_table("HOSPITAL")
+        elif tmp_inp == "5":
+            self.print_table("DOCTOR")
+
+    def __loginFalse(self, text):
+        cprint(f"Login Unsuccessful: {text}", "red")
         del self
+
+    def print_table(self, table_name):
+        df = db.database[table_name]
+        print(f"_____\n|\n{df}\n|\n`````")
+        self.menu()
 
     def add_hospital(self):
         if not self.__login_status:
-            cprint("You have not logged in.", "red")
+            # cprint("You have not logged in.", "red")
             return
 
         def get_ENTRY_EMAIL_ID():
@@ -274,14 +308,14 @@ class Admin:
 
         def get_ENTRY_PHONE_NUMBER():
             while True:
-                tmp_inp = input("Enter the phone number: ")
+                tmp_inp = input("Enter Hospital the phone number: ")
                 if re.match("^\d{10}$", tmp_inp):
                     return tmp_inp.strip()
                 cprint("[!] Please enter in the given format [\d\{10\}]", "red")
 
         def get_ENTRY_LOCATION():
             while True:
-                tmp_inp = input("Enter the location: ")
+                tmp_inp = input("Enter Hospital the location: ")
                 if tmp_inp != "":
                     break
                 cprint("[!] Location cannot be empty", "red")
@@ -291,17 +325,18 @@ class Admin:
         ENTRY_EMAIL_ID = get_ENTRY_EMAIL_ID()
         ENTRY_PHONE_NUMBER = get_ENTRY_PHONE_NUMBER()
         ENTRY_LOCATION = get_ENTRY_LOCATION()
-        df[len(df)] = [j for i, j in locals().items() if i.startswith("ENTRY_")]
+        df.loc[len(df)] = [j for i, j in locals().items() if i.startswith("ENTRY_")]
         cprint("Entry for Hospital has been added.", "green")
         df.to_excel("./db/HOSPITAL.xlsx", index=False)
+        self.menu()
 
     def add_doctor(self):
         if not self.__login_status:
-            cprint("You have not logged in.", "red")
+            # cprint("You have not logged in.", "red")
             return
 
         def get_ENTRY_EMAIL_ID():
-            tmp_inp = input("Enter Your Email ID: ")
+            tmp_inp = input("Enter Doctor's Email ID: ")
             while True:
                 if tmp_inp == "":  # id must not be empty
                     cprint("[!] Email ID cannot be empty", "red")
@@ -310,19 +345,19 @@ class Admin:
                     cprint("[!] Email ID should be valid", "red")
                 else:
                     break
-                tmp_inp = input("Enter Your Email ID: ")
+                tmp_inp = input("Enter Doctor's Email ID: ")
             return tmp_inp
 
         def get_ENTRY_PHONE_NUMBER():
             while True:
-                tmp_inp = input("Enter the phone number: ")
+                tmp_inp = input("Enter Doctor's phone number: ")
                 if re.match("^\d{10}$", tmp_inp):
                     return tmp_inp.strip()
                 cprint("[!] Please enter in the given format [\d\{10\}]", "red")
 
         def get_ENTRY_YOE():
             while True:
-                tmp_inp = input("Enter the Year of Experiance: ")
+                tmp_inp = input("Enter Doctor's the Year of Experiance: ")
                 try:
                     tmp_inp = int(tmp_inp)
                     if tmp_inp > 0:
@@ -333,7 +368,7 @@ class Admin:
 
         def get_ENTRY_RATING():
             while True:
-                tmp_inp = input("Enter the rating: ")
+                tmp_inp = input("Enter Doctor's the rating: ")
                 try:
                     tmp_inp = float(tmp_inp)
                     if tmp_inp >= 0:
@@ -344,7 +379,7 @@ class Admin:
 
         def get_ENTRY_SPECIALITY():
             while True:
-                tmp_inp = input("Enter the Speciality [comma seperated]: ")
+                tmp_inp = input("Enter the Doctor's Speciality [comma seperated]: ")
                 if tmp_inp != "":
                     break
                 cprint("[!] Speciality cannot be empty", "red")
@@ -354,7 +389,8 @@ class Admin:
         ENTRY_SPECIALITY = get_ENTRY_SPECIALITY()
         ENTRY_YOE = get_ENTRY_YOE()
         ENTRY_RATING = get_ENTRY_RATING()
-        ENTRY_PHONE_NUMBER = get_PHONE_NUMBER()
+        ENTRY_PHONE_NUMBER = get_ENTRY_PHONE_NUMBER()
+        self.menu()
 
     def maintain_doctor_details(self):
         ...
@@ -414,8 +450,7 @@ class LogReg:
             temp_user.login()
 
     def admin(self):
-        ad = Admin()
-        ad.add_hospital()
+        temp_user = Admin()
 
     def doctor(self):
         ...
