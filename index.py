@@ -155,7 +155,7 @@ class Patient:
         cprint("You have successfully registered into Practo.", "green")
         db.database["PATIENT"].to_excel("./db/PATIENT.xlsx", index=False)
         if utils.checkIf(["yes", "y", "1"], input("Do you want to login? ")):
-            self.login()
+            self.login(emailid=ENTRY_EMAIL_ID)
             return "Redirected to Login Page"
 
     def login(self, emailid=None):
@@ -387,7 +387,7 @@ class Hospital:
 
 
 class LogReg:
-    def __init__():
+    def __init__(self):
         print("-" * 15, "LOGIN/REGISTER", "-" * 15)
         call_em = [self.patient, self.doctor, self.admin, self.hospital]
         ind = int(
@@ -396,12 +396,12 @@ class LogReg:
               1. User
               2. Doctor
               3. Admin
-              4. Hospital admin"""
+              4. Hospital admin\n"""
             )
         )
-        call_em[ind]
+        call_em[ind - 1]()
 
-    def patient():
+    def patient(self):
         temp_user = Patient()
         tmp_inp = input(
             """Please enter your choice:
@@ -413,14 +413,14 @@ class LogReg:
         elif tmp_inp == "2":
             temp_user.login()
 
-    def admin():
+    def admin(self):
         ad = Admin()
         ad.add_hospital()
 
-    def doctor():
+    def doctor(self):
         ...
 
-    def hospital():
+    def hospital(self):
         ...
 
 
