@@ -283,7 +283,7 @@ class Patient:
 
         def get_ENTRY_REM():
             tmp = input("Do you wanna get remainded? [yes|y|1]")
-            if utils.checkIf(["yes", "y", "1"], input("> Do you want to login? ")):
+            if utils.checkIf(["yes", "y", "1"], tmp):
                 return "Y"
             else:
                 return "N"
