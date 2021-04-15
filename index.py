@@ -60,8 +60,6 @@ class Database:
                 "HOSPITAL_NAME",
             ]
         )
-        DBT_HOSPITAL = pd.DataFrame(columns=["EMAIL", "PHONE_NUMBER", "LOCATION"])
-
         db_tables = [i for i in locals() if i.startswith("DBT_")]
         for table_name in db_tables:
             temp_name = table_name.split("_")[1]
@@ -205,9 +203,6 @@ class Patient:
                 if count:
                     cprint(f"[!] Login Unsuccessful, tries allowed: {count}", "red")
         cprint("[i] Sorry, we couldn't log you in", "cyan")
-
-    def search(self):
-        ...
 
     def book_appointments(self):
         ...

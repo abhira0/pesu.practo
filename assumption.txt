@@ -1,0 +1,8 @@
+Check Appointment Status
+- Doctors can take maximum of 5 appointments in a day
+-- every doctor has a column cell: {"4/15/2021":{1:"", 2:"", 3:"", 4:"", 5:""}}
+---- 1: 8-10
+---- 2: 10-12
+---- 3: 1-3
+---- 4: 3-5
+---- 5: 6-8
