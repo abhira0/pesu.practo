@@ -7,6 +7,7 @@ import re, datetime, random
 class utils:
     @staticmethod
     def checkIf(arr: list, text: str):
+        # checks whether the given pattern matches the given text by ignoring cases (force all to lower case)
         for pattern in arr:
             if pattern.lower() == text.strip().lower():
                 return True
@@ -14,9 +15,12 @@ class utils:
 
     @staticmethod
     def isValidDate(date: str):
-        d, m, y = map(int, date)
+        # date must be in the format dd/mm/yyyy
         try:
-            datetime.datetime(d, m, y)
+            date = [i.strip() for i in date.split("/")]
+            d, m, y = map(int, date)
+            # parameter for datetime.datetime() is in the order year, month, day ...
+            datetime.datetime(y, m, d)
         except:
             return False
         return True
@@ -244,26 +248,62 @@ class Patient:
             return "Dermatologist"
         if re.findall(r"(fracture)", search_text):
             return "Surgeon"
+        return "General"
 
     def book_appointments(self):
         if not self.__login_status:
             return
-        search_text = input(">> Enter the problem: ")
+
+        def get_search_text():
+            while True:
+                tmp = input(">> Enter the problem: ")
+                if tmp:
+                    return tmp
+                cprint("[!] Problem cannot be empty", "red")
+
+        def get_ENTRY_SLOT():
+            while True:
+                tmp = input("> Any one in 1,2,3,4,5: ")
+                try:
+                    x = int(tmp)
+                    if x in [1, 2, 3, 4, 5]:
+                        return x
+                except:
+                    ...
+                cprint("[!] Enter an integer from the given set", "red")
+
+        def get_ENTRY_DATE():
+            while True:
+                tmp = input("> Enter the date [dd/mm/yyyy]: ")
+                if utils.isValidDate(tmp):
+                    return tmp
+                cprint("[!] Please enter a valid date", "red")
+
+        search_text = get_search_text()
         spec_req = self.get_specialization(search_text)
         df = db.database["DOCTOR"]
-        doctors = {i[1][0]: i[0] for i in df.iterrows() if "Dermatologist" in i[1][1]}
+        doctors = {i[1][0]: i[0] for i in df.iterrows() if spec_req in i[1][1]}
         print(">> Please select the doctor: ")
-        count = 1
-        for i in doctors:
-            print(f"\t\t{count}. {i}")
-            count += 1
+        for count, doctor_name in enumerate(doctors):
+            print(f"\t\t{count+1}. {doctor_name}")
         ind = int(input("> Number? : "))
-        ENTRY_DOCTOR = list(doctors.keys())[ind]
+        ENTRY_DOCTOR = list(doctors.keys())[ind - 1]
         ENTRY_PATIENT = self.emailid
-        ENTRY_DATE = input("> Enter the date [dd/mm/yyyy]: ")
-        ENTRY_SLOT = input("> Any one in 1,2,3,4,5: ")
+        df = db.database["APPOINTMENT"]
         for _ in range(5):
-            vaild
+            ENTRY_DATE = get_ENTRY_DATE()
+            ENTRY_SLOT = get_ENTRY_SLOT()
+            temp_series = (df["DATE"] == ENTRY_DATE) & (df["SLOT"] == ENTRY_SLOT)
+            #
+            if not df.loc[(df["DOCTOR"] == ENTRY_DOCTOR) & temp_series].empty:
+                txt = "[i] We are sorry to say that the timeslot has already been booked\nPlease select another slot"
+                cprint(txt, "cyan")
+                continue
+            if not df.loc[(df["PATIENT"] == ENTRY_PATIENT) & temp_series].empty:
+                txt = "[i] You have been already appointed for this timeslot\nPlease select another slot"
+                cprint(txt, "cyan")
+            else:
+                break
 
         df = db.database["APPOINTMENT"]
         df.loc[len(df)] = [j for i, j in locals().items() if i.startswith("ENTRY_")]
