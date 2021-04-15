@@ -293,27 +293,16 @@ class Patient:
         df = db.database["DOCTOR"]
         doctors = {i[1][0]: i[0] for i in df.iterrows() if spec_req in i[1][1]}
         print(">> Please select the doctor: ")
-        for count, doctor_name in enumerate(doctors):
-            print(f"\t\t{count+1}. {doctor_name}")
+        count = 1
+        print(doctors)
+        for i in doctors:
+            print(f"\t\t{count}. {i}")
+            count += 1
         ind = int(input("> Number? : "))
         ENTRY_DOCTOR = list(doctors.keys())[ind - 1]
         ENTRY_PATIENT = self.emailid
-        df = db.database["APPOINTMENT"]
-        for _ in range(5):
-            ENTRY_DATE = get_ENTRY_DATE()
-            ENTRY_SLOT = get_ENTRY_SLOT()
-            temp_series = (df["DATE"] == ENTRY_DATE) & (df["SLOT"] == ENTRY_SLOT)
-            #
-            if not df.loc[(df["DOCTOR"] == ENTRY_DOCTOR) & temp_series].empty:
-                txt = "[i] We are sorry to say that the timeslot has already been booked\nPlease select another slot"
-                cprint(txt, "cyan")
-                continue
-            if not df.loc[(df["PATIENT"] == ENTRY_PATIENT) & temp_series].empty:
-                txt = "[i] You have been already appointed for this timeslot\nPlease select another slot"
-                cprint(txt, "cyan")
-            else:
-                break
-        ENTRY_REM = get_ENTRY_REM()
+        ENTRY_DATE = input("> Enter the date [dd/mm/yyyy]: ")
+        ENTRY_SLOT = input("> Any one in 1,2,3,4,5: ")
         df = db.database["APPOINTMENT"]
         df.loc[len(df)] = [j for i, j in locals().items() if i.startswith("ENTRY_")]
         cprint("Entry for Appointment has been added.", "green")
