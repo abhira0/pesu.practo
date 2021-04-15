@@ -1,7 +1,7 @@
 import pandas as pd
 import os
 from termcolor import cprint
-import re, datetime
+import re, datetime, random
 
 
 class utils:
@@ -60,6 +60,7 @@ class Database:
                 "HOSPITAL_NAME",
             ]
         )
+        DBT_APPOINTMENT = pd.DataFrame(columns=["DOCTOR", "PATIENT", "DATE", "SLOT"])
         db_tables = [i for i in locals() if i.startswith("DBT_")]
         for table_name in db_tables:
             temp_name = table_name.split("_")[1]
@@ -74,6 +75,17 @@ db = Database()
 class Patient:
     def __init__(self):
         self.__login_status = False
+        tmp_inp = input(
+            """>> Please enter your choice:
+            1. Register
+            2. Login\n"""
+        )
+        if tmp_inp == "1":
+            self.register()
+        elif tmp_inp == "2":
+            self.login()
+        if self.__login_status:
+            self.menu
 
     def register(self, emailid=None):
         def get_ENTRY_EMAIL_ID():
@@ -197,15 +209,67 @@ class Patient:
                 tmp_inp = get_ENTRY_PASSWORD().strip()
                 if tmp_inp == __utthara:
                     self.__login_status = True
+                    self.emailid = ENTRY_EMAIL_ID
                     cprint("Login Successful", "green")
+                    self.menu()
                     return "Login Successful"
                 count -= 1
                 if count:
                     cprint(f"[!] Login Unsuccessful, tries allowed: {count}", "red")
         cprint("[i] Sorry, we couldn't log you in", "cyan")
 
+    def menu(self):
+        if not self.__login_status:
+            return
+
+        print("-" * 20, "USER", "-" * 20)
+        try:
+            tmp_inp = input(
+                """>> Please enter your choice: [Ctrl+C to Quit]
+                1. Book Appointment\n"""
+            )
+        except:
+            cprint("Bella ciao", "magenta")
+            exit(0)
+        if tmp_inp == "1":
+            self.book_appointments()
+
+    def get_specialization(self, search_text):
+        ret = []
+        if re.findall(r"(fever)|(cough)|(cold)|(headache)|(bodypain)", search_text):
+            return "General"
+        if re.findall(r"(heart)", search_text):
+            return "Cardiologist"
+        if re.findall(r"(rashes)|(acne)|(pimple)|(skin)", search_text):
+            return "Dermatologist"
+        if re.findall(r"(fracture)", search_text):
+            return "Surgeon"
+
     def book_appointments(self):
-        ...
+        if not self.__login_status:
+            return
+        search_text = input(">> Enter the problem: ")
+        spec_req = self.get_specialization(search_text)
+        df = db.database["DOCTOR"]
+        doctors = {i[1][0]: i[0] for i in df.iterrows() if "Dermatologist" in i[1][1]}
+        print(">> Please select the doctor: ")
+        count = 1
+        for i in doctors:
+            print(f"\t\t{count}. {i}")
+            count += 1
+        ind = int(input("> Number? : "))
+        ENTRY_DOCTOR = list(doctors.keys())[ind]
+        ENTRY_PATIENT = self.emailid
+        ENTRY_DATE = input("> Enter the date [dd/mm/yyyy]: ")
+        ENTRY_SLOT = input("> Any one in 1,2,3,4,5: ")
+        for _ in range(5):
+            vaild
+
+        df = db.database["APPOINTMENT"]
+        df.loc[len(df)] = [j for i, j in locals().items() if i.startswith("ENTRY_")]
+        cprint("Entry for Appointment has been added.", "green")
+        df.to_excel("./db/APPOINTMENT.xlsx", index=False)
+        self.menu()
 
     def confirmation(self):
         ...
@@ -365,7 +429,7 @@ class Admin:
 class LogReg:
     def __init__(self):
         print("-" * 15, "LOGIN/REGISTER", "-" * 15)
-        call_em = [self.patient, self.doctor, self.admin, self.hospital]
+        call_em = [self.patient, self.doctor, self.admin]
         ind = int(
             input(
                 """>> Who are you?
@@ -378,15 +442,6 @@ class LogReg:
 
     def patient(self):
         temp_user = Patient()
-        tmp_inp = input(
-            """>> Please enter your choice:
-            1. Register
-            2. Login\n"""
-        )
-        if tmp_inp == "1":
-            temp_user.register()
-        elif tmp_inp == "2":
-            temp_user.login()
 
     def admin(self):
         temp_user = Admin()
