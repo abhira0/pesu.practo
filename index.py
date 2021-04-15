@@ -64,7 +64,9 @@ class Database:
                 "HOSPITAL_NAME",
             ]
         )
-        DBT_APPOINTMENT = pd.DataFrame(columns=["DOCTOR", "PATIENT", "DATE", "SLOT"])
+        DBT_APPOINTMENT = pd.DataFrame(
+            columns=["DOCTOR", "PATIENT", "DATE", "SLOT", "REM"]
+        )
         db_tables = [i for i in locals() if i.startswith("DBT_")]
         for table_name in db_tables:
             temp_name = table_name.split("_")[1]
@@ -279,6 +281,13 @@ class Patient:
                     return tmp
                 cprint("[!] Please enter a valid date", "red")
 
+        def get_ENTRY_REM():
+            tmp = input("Do you wanna get remainded? [yes|y|1]")
+            if utils.checkIf(["yes", "y", "1"], input("> Do you want to login? ")):
+                return "Y"
+            else:
+                return "N"
+
         search_text = get_search_text()
         spec_req = self.get_specialization(search_text)
         df = db.database["DOCTOR"]
@@ -304,7 +313,7 @@ class Patient:
                 cprint(txt, "cyan")
             else:
                 break
-
+        ENTRY_REM = get_ENTRY_REM()
         df = db.database["APPOINTMENT"]
         df.loc[len(df)] = [j for i, j in locals().items() if i.startswith("ENTRY_")]
         cprint("Entry for Appointment has been added.", "green")
