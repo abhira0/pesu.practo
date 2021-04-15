@@ -287,48 +287,6 @@ class Admin:
         print(f"_____\n|\n{df}\n|\n`````")
         self.menu()
 
-    def add_hospital(self):
-        if not self.__login_status:
-            # cprint("You have not logged in.", "red")
-            return
-
-        def get_ENTRY_EMAIL_ID():
-            tmp_inp = input("> Enter Hospital Email ID: ")
-            while True:
-                if tmp_inp == "":  # id must not be empty
-                    cprint("[!] Email ID cannot be empty", "red")
-                # id must be valid
-                elif not re.match(r"[\w\d]+@[\d\w]+\.[\w]", tmp_inp):
-                    cprint("[!] Email ID should be valid", "red")
-                else:
-                    break
-                tmp_inp = input("> Enter Hospital Email ID: ")
-            return tmp_inp
-
-        def get_ENTRY_PHONE_NUMBER():
-            while True:
-                tmp_inp = input("> Enter Hospital the phone number: ")
-                if re.match("^\d{10}$", tmp_inp):
-                    return tmp_inp.strip()
-                cprint("[!] Please enter in the given format [\d\{10\}]", "red")
-
-        def get_ENTRY_LOCATION():
-            while True:
-                tmp_inp = input("> Enter Hospital the location: ")
-                if tmp_inp != "":
-                    break
-                cprint("[!] Location cannot be empty", "red")
-            return tmp_inp
-
-        ENTRY_EMAIL_ID = get_ENTRY_EMAIL_ID()
-        ENTRY_PHONE_NUMBER = get_ENTRY_PHONE_NUMBER()
-        ENTRY_LOCATION = get_ENTRY_LOCATION()
-        df = db.database["HOSPITAL"]
-        df.loc[len(df)] = [j for i, j in locals().items() if i.startswith("ENTRY_")]
-        cprint("Entry for Hospital has been added.", "green")
-        df.to_excel("./db/HOSPITAL.xlsx", index=False)
-        self.menu()
-
     def add_doctor(self):
         if not self.__login_status:
             # cprint("You have not logged in.", "red")
@@ -434,9 +392,6 @@ class LogReg:
         temp_user = Admin()
 
     def doctor(self):
-        ...
-
-    def hospital(self):
         ...
 
 
