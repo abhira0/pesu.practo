@@ -1,7 +1,6 @@
-import pandas as pd
-import os
 from termcolor import cprint
 import re, datetime, random
+from modulez.dbpy import *
 
 
 class utils:
@@ -24,55 +23,6 @@ class utils:
         except:
             return False
         return True
-
-
-class Database:
-    database = {}
-
-    def __init__(self):
-        self.create_table()
-        self.get_db()
-
-    def get_db(self):
-        tables_xlsx = os.listdir("./db")
-        for table_xlsx in tables_xlsx:
-            table_name = table_xlsx.split(".")[0]
-            self.database[table_name] = pd.read_excel(f"./db/{table_xlsx}")
-
-    def create_table(self):
-        DBT_PATIENT = pd.DataFrame(
-            columns=["EMAIL_ID", "PASSWORD", "GENDER", "AGE", "PHONE_NUMBER"]
-        )
-        DBT_DOCTOR = pd.DataFrame(
-            columns=[
-                "EMAIL_ID",
-                "SPECIALITY",
-                "YOE",
-                "RATING",
-                "PHONE_NUMBER",
-                "AVAILABILITY",
-            ]
-        )
-        DBT_ADMIN = pd.DataFrame(
-            columns=[
-                "ADMIN_NAME",
-                "PID",
-                "DID",
-                "PASSWORD",
-                "BOOKING_TIME",
-                "TIMESTAMP",
-                "HOSPITAL_NAME",
-            ]
-        )
-        DBT_APPOINTMENT = pd.DataFrame(
-            columns=["DOCTOR", "PATIENT", "DATE", "SLOT", "REM"]
-        )
-        db_tables = [i for i in locals() if i.startswith("DBT_")]
-        for table_name in db_tables:
-            temp_name = table_name.split("_")[1]
-            if not os.path.exists(f"./db/{temp_name}.xlsx"):
-                print(f"CREATE TABLE {temp_name}")
-                locals()[table_name].to_excel(f"./db/{temp_name}.xlsx", index=False)
 
 
 db = Database()
@@ -232,16 +182,18 @@ class Patient:
         try:
             tmp_inp = input(
                 """>> Please enter your choice: [Ctrl+C to Quit]
-                1. Book Appointment\n"""
+                1. Book Appointment
+                2. Cancel Appointment\n"""
             )
         except:
             cprint("Bella ciao", "magenta")
             exit(0)
         if tmp_inp == "1":
             self.book_appointments()
+        if tmp_inp == "2":
+            self.delete_appointment()
 
     def get_specialization(self, search_text):
-        ret = []
         if re.findall(r"(fever)|(cough)|(cold)|(headache)|(bodypain)", search_text):
             return "General"
         if re.findall(r"(heart)", search_text):
@@ -282,7 +234,7 @@ class Patient:
                 cprint("[!] Please enter a valid date", "red")
 
         def get_ENTRY_REM():
-            tmp = input("Do you wanna get remainded? [yes|y|1]")
+            tmp = input("Do you wanna get remainded? [yes|y|1]: ")
             if utils.checkIf(["yes", "y", "1"], tmp):
                 return "Y"
             else:
@@ -320,8 +272,34 @@ class Patient:
         df.to_excel("./db/APPOINTMENT.xlsx", index=False)
         self.menu()
 
-    def confirmation(self):
-        ...
+    def delete_appointment(self):
+        df = db.database["APPOINTMENT"]
+        aptmnts = [i[1] for i in df.iterrows() if self.emailid in i[1][1]]
+        aptinds = [i[0] for i in df.iterrows() if self.emailid in i[1][1]]
+        slot_time_map = {
+            1: "8-10 AM",
+            2: "10 AM-12 PM",
+            3: "1-3 PM",
+            4: "3-5 PM",
+            5: "6-8 PM",
+        }
+        if aptmnts:
+            print(">> Enter the index of the doctor: ")
+            for count, i in enumerate(aptmnts):
+                print(
+                    f"\t{count+1}. Doctor: {i[0]}, Date: {i[2]}, Time Slot: {i[3]}, Time: {slot_time_map[i[3]]}"
+                )
+            ind = int(input("Enter the index: "))
+            entry_to_delete = aptmnts[ind - 1]
+            cprint(
+                f"Deleting the entry: Doctor: {i[0]}, Date: {i[2]}, Time Slot: {i[3]}, Time: {slot_time_map[i[3]]}",
+                "red",
+            )
+            df.drop(df.index[[aptinds[ind - 1]]], inplace=True)
+            df.to_excel("./db/APPOINTMENT.xlsx", index=False)
+        else:
+            cprint("Sorry to say that you have not booked any appointment", "red")
+        self.menu()
 
 
 class Doctor:
@@ -369,10 +347,8 @@ class Admin:
             tmp_inp = input(
                 """>> Please enter your choice: [Ctrl+C to Quit]
                 1. Add Doctor
-                2. Add Hospital
-                3. Print User DB
-                4. Print Hospital DB
-                5. Print Doctor DB\n"""
+                2. Print User DB
+                3. Print Doctor DB\n"""
             )
         except:
             cprint("BYE BYE Admin avre", "magenta")
@@ -380,12 +356,8 @@ class Admin:
         if tmp_inp == "1":
             self.add_doctor()
         elif tmp_inp == "2":
-            self.add_hospital()
-        elif tmp_inp == "3":
             self.print_table("PATIENT")
-        elif tmp_inp == "4":
-            self.print_table("HOSPITAL")
-        elif tmp_inp == "5":
+        elif tmp_inp == "3":
             self.print_table("DOCTOR")
 
     def __loginFalse(self, text):
