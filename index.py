@@ -19,8 +19,8 @@ class utils:
             date = [i.strip() for i in date.split("/")]
             d, m, y = map(int, date)
             # parameter for datetime.datetime() is in the order year, month, day ...
-            if datetime.date.today() <= datetime.datetime(y, m, d):
-                return True
+            # if datetime.date.today() <= datetime.datetime(y, m, d):
+            return True
         except:
             ...
         return False
