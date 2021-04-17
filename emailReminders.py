@@ -17,6 +17,7 @@ import smtplib, ssl
 
 # db = Database()
 
+
 class utils:
     @staticmethod
     def checkIf(arr: list, text: str):
@@ -82,21 +83,23 @@ class Database:
                 print(f"CREATE TABLE {temp_name}")
                 locals()[table_name].to_excel(f"./db/{temp_name}.xlsx", index=False)
 
+
 db = Database()
-df = db.database['APPOINTMENT']
+df = db.database["APPOINTMENT"]
 to_send = []
 today = date.today()
-schedule_date =str(today.day+1)+'/'+str(today.month)+'/'+str(today.year)
-for i  in range(len(df)):
-    if(df['DATE'][i] == schedule_date and df['REM'][i] == 'Y'):
-        print(df['PATIENT'][i])
-        to_send.append(df['PATIENT'][i])
+schedule_date = str(today.day + 1) + "/" + str(today.month) + "/" + str(today.year)
+for i in range(len(df)):
+    if df["DATE"][i] == schedule_date and df["REM"][i] == "Y":
+        print(df["PATIENT"][i])
+        to_send.append(df["PATIENT"][i])
+
 
 def sendmail(patients):
 
     sender_email = "consultationspracto@gmail.com"
     port = 465
-    password = 'passwd@123'
+    password = "passwd@123"
     context = ssl.create_default_context()
     message = """\
         Subject: Appoinrment Remainder
@@ -109,4 +112,5 @@ def sendmail(patients):
             print(patients[i])
             server.sendmail(sender_email, patients[i], message)
 
-sendmail(['kushalkrishnappa333@gmial.com'])
+
+sendmail(["kushalkrishnappa333@gmial.com"])

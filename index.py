@@ -273,6 +273,16 @@ class Patient:
         self.menu()
 
     def delete_appointment(self):
+        def get_index():
+            while True:
+                try:
+                    ind = int(input("Enter the index: "))
+                    if ind in range(0, len(aptmnts)):
+                        return ind
+                except:
+                    ...
+                cprint("[!] Enter the valid index", "red")
+
         df = db.database["APPOINTMENT"]
         aptmnts = [i[1] for i in df.iterrows() if self.emailid in i[1][1]]
         aptinds = [i[0] for i in df.iterrows() if self.emailid in i[1][1]]
@@ -289,7 +299,7 @@ class Patient:
                 print(
                     f"\t{count+1}. Doctor: {i[0]}, Date: {i[2]}, Time Slot: {i[3]}, Time: {slot_time_map[i[3]]}"
                 )
-            ind = int(input("Enter the index: "))
+            ind = get_index()
             entry_to_delete = aptmnts[ind - 1]
             cprint(
                 f"Deleting the entry: Doctor: {i[0]}, Date: {i[2]}, Time Slot: {i[3]}, Time: {slot_time_map[i[3]]}",
