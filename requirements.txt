@@ -1,0 +1,5 @@
+#development requirements
+pandas==1.2.3
+os
+re
+termcolor==1.1.0
