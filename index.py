@@ -377,7 +377,7 @@ class Admin:
         elif tmp_inp == "3":
             self.print_table("DOCTOR")
         elif tmp_inp == "4":
-            self.print_table("DOCTOR")
+            self.send_email_remainders()
 
     def __loginFalse(self, text):
         cprint(f"Login Unsuccessful: {text}", "red")

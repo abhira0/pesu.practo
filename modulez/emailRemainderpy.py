@@ -91,7 +91,3 @@ class reminder:
                     cprint("Sending reminder to" + "  -->  " + self.to_send[i], "red")
                     server.sendmail(sender_email, self.to_send[i], message)
                 cprint("---All reminders sent :)", "red")
-
-
-c = reminder()
-c.sendmail()
