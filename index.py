@@ -1,6 +1,11 @@
+import datetime
+import random
+import re
+
 from termcolor import cprint
-import re, datetime, random
+
 from modulez.dbpy import *
+from modulez.emailRemainderpy import *
 
 
 class utils:
@@ -359,7 +364,8 @@ class Admin:
                 """>> Please enter your choice: [Ctrl+C to Quit]
                 1. Add Doctor
                 2. Print User DB
-                3. Print Doctor DB\n"""
+                3. Print Doctor DB
+                4. Send Email Remainders\n"""
             )
         except:
             cprint("BYE BYE Admin avre", "magenta")
@@ -369,6 +375,8 @@ class Admin:
         elif tmp_inp == "2":
             self.print_table("PATIENT")
         elif tmp_inp == "3":
+            self.print_table("DOCTOR")
+        elif tmp_inp == "4":
             self.print_table("DOCTOR")
 
     def __loginFalse(self, text):
@@ -450,6 +458,13 @@ class Admin:
         cprint("Entry for Doctor has been added.", "green")
         df.to_excel("./db/DOCTOR.xlsx", index=False)
         self.menu()
+
+    def send_email_remainders(self):
+        if not self.__login_status:
+            # cprint("You have not logged in.", "red")
+            return
+        tmp_obj = reminder()
+        tmp_obj.sendmail()
 
     def maintain_doctor_details(self):
         ...
