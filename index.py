@@ -283,7 +283,7 @@ class Patient:
             while True:
                 try:
                     ind = int(input("Enter the index: "))
-                    if ind in range(0, len(aptmnts)):
+                    if ind in range(1, len(aptmnts) + 1):
                         return ind
                 except:
                     ...
